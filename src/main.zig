@@ -39,11 +39,11 @@ pub const Dialog = struct {
 
 test "simple test" {
     const allocator = std.testing.allocator;
-    const memory = try allocator.alloc(Dialog, 5);
-    defer allocator.free(memory);
+    const dialogs = try allocator.alloc(Dialog, 5);
+    defer allocator.free(dialogs);
 
-    try expect(memory.len == 5);
-    try expect(@TypeOf(memory) == []Dialog);
+    try expect(dialogs.len == 5);
+    try expect(@TypeOf(dialogs) == []Dialog);
 
     const big_font = Font{ .size = 18, .bold = true, .cursive = false };
     const normal_font = Font{};
@@ -53,15 +53,15 @@ test "simple test" {
     const dialog_two = DialogText{ .font = &big_font, .text = "Big font needs some shouting! RAWR!!!" };
     const dialog_three = DialogText{ .font = &fancy_font, .text = "Mmmmmmmmmmhm me lady~" };
 
-    var dialog = Dialog{};
-    dialog.add(dialog_one);
-    dialog.add(dialog_two);
-    dialog.add(dialog_three);
+    dialogs[0] = Dialog{};
+    dialogs[0].add(dialog_one);
+    dialogs[0].add(dialog_two);
+    dialogs[0].add(dialog_three);
+
+    const dialog = &dialogs[0];
 
     try expect(std.mem.eql(u8, dialog.get().text, "Some dialog for testing."));
 
     dialog.next();
     try expect(std.mem.eql(u8, dialog.get().text, "Big font needs some shouting! RAWR!!!"));
-
-    std.log.warn("Size of a dialog struct: {d}\n", .{@sizeOf(Dialog)});
 }
