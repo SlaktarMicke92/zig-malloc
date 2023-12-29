@@ -17,6 +17,7 @@ pub const DialogText = struct {
 };
 
 pub const Dialog = struct {
+    id: u16,
     dialogs: [10]DialogText = [_]DialogText{undefined} ** 10,
     current_dialog: u8 = 0,
     number_of_dialogs: u8 = 0,
@@ -49,19 +50,31 @@ test "simple test" {
     const normal_font = Font{};
     const fancy_font = Font{ .cursive = true };
 
-    const dialog_one = DialogText{ .font = &normal_font, .text = "Some dialog for testing." };
-    const dialog_two = DialogText{ .font = &big_font, .text = "Big font needs some shouting! RAWR!!!" };
-    const dialog_three = DialogText{ .font = &fancy_font, .text = "Mmmmmmmmmmhm me lady~" };
+    const dialog_text_one = DialogText{ .font = &normal_font, .text = "Some dialog for testing." };
+    const dialog_text_two = DialogText{ .font = &big_font, .text = "Big font needs some shouting! RAWR!!!" };
+    const dialog_text_three = DialogText{ .font = &fancy_font, .text = "Mmmmmmmmmmhm me lady~" };
 
-    dialogs[0] = Dialog{};
-    dialogs[0].add(dialog_one);
-    dialogs[0].add(dialog_two);
-    dialogs[0].add(dialog_three);
+    dialogs[0] = Dialog{ .id = 1 };
+    dialogs[0].add(dialog_text_one);
+    dialogs[0].add(dialog_text_two);
+    dialogs[0].add(dialog_text_three);
+
+    dialogs[1] = Dialog{ .id = 2 };
+    dialogs[1].add(dialog_text_three);
+    dialogs[1].add(dialog_text_two);
+    dialogs[1].add(dialog_text_one);
 
     const dialog = &dialogs[0];
+    const dialog_two = &dialogs[1];
 
     try expect(std.mem.eql(u8, dialog.get().text, "Some dialog for testing."));
+    try expect(std.mem.eql(u8, dialog_two.get().text, "Mmmmmmmmmmhm me lady~"));
 
     dialog.next();
     try expect(std.mem.eql(u8, dialog.get().text, "Big font needs some shouting! RAWR!!!"));
 }
+
+// What I need:
+// Storing data
+// Easy access to data
+// ONE struct that uses a single pointer to the active dialog
